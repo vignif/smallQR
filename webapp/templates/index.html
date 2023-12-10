@@ -5,15 +5,14 @@
     <div class="container">
         <div class="row align-items-center">
             <!-- Image column -->
-            <div class="col-md-2 text-center">
+            <div class="col-md-5 text-center">
                 <a href="/">
-                    <img src="{{ url_for('static', filename='main.png') }}" alt="QR Code" width="200" height="200" style="filter: opacity(0.5);
-                    ">
+                    <img src="{{ url_for('static', filename='main.png') }}" alt="QR Code" width="436" height="238" >
                 </a>
             </div>
     
             <!-- Text column -->
-            <div class="col-md-10">
+            <div class="col-md align-content-end">
                 <h1 class="display-4">{{ app_data['html_title'] }} </h1>
                 <p class="lead" style="text-align: justify;">{{ app_data['description'] }} </p>
             </div>
