@@ -14,18 +14,15 @@ SmallQR is a web application that allows users to create the smallest QR code gi
 - QR code version selection
 - In-memory storage (no disk storage)
 
-## Getting Started
 
-### Prerequisites
+## Demo Available
+App currently hosted on pythonanywhere. Click the link below to try it out!
 
-- Python 3.x
-- Flask
-- PyQRCode
-- Other dependencies (install using `pip install -r requirements.txt`)
+[![Demo](https://img.shields.io/badge/Demo-Click%20Here-blue.svg)](https://smallqr.pythonanywhere.com/)
 
 ### Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/SmallQR-Web-App.git
+   git clone https://github.com/vignif/SmallQR-Web-App.git
