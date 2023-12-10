@@ -26,7 +26,7 @@ def index():
         error = request.form.get('check')
         version = int(request.form.get('version', 0))
         t0 = time.time()
-
+        minimal_version = None
         try:
             if version:
                 im, err = manual_qr(link, version, error)
@@ -36,7 +36,14 @@ def index():
             app_data["time"] = f"{time.time() - t0:.2f}"
             encoded_img_data = base64.b64encode(im).decode('utf-8') if not err else None
 
-            sanity = decode(im)
+            if not err:
+                sanity = decode(im)
+            else:
+                sanity = None
+            print(sanity)
+            print(encoded_img_data)
+            print(minimal_version)
+            
             content = {
                 "app_data": app_data,
                 "version": version,
