@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="path/to/your/image.png" alt="SmallQR Header" width="400">
+  <img src="main.png" alt="SmallQR Header" width="400">
 </p>
 
 # SmallQR Web App
