@@ -20,6 +20,11 @@ App currently hosted on pythonanywhere. Click the link below to try it out!
 
 [![Demo](https://img.shields.io/badge/Demo-Click%20Here-blue.svg)](https://smallqr.pythonanywhere.com/)
 
+[![Demo](https://img.shields.io/badge/Demo-Click%20Here-blue.svg)](https://smallqr.pythonanywhere.com/){:target="_blank"}
+
+[Demonstration](https://smallqr.pythonanywhere.com/){:target="_blank"}
+
+
 ### Installation
 
 1. Clone the repository:
