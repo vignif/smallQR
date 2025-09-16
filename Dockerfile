@@ -6,6 +6,12 @@ FROM python:3.9-slim AS base
 # Set working directory
 WORKDIR /app
 
+# Install system dependencies (zbar)
+RUN apt-get update && apt-get install -y \
+    libzbar0 \
+    zbar-tools \
+    && rm -rf /var/lib/apt/lists/*
+    
 # Install dependencies
 COPY webapp/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
