@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template
 from smallest_qr import smallest_qr, manual_qr, decode
 import base64
@@ -62,5 +63,10 @@ def index():
 
     return render_template("index.html", app_data=app_data)
 
+import logging
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    logging.basicConfig(level=logging.INFO)
+    port = int(os.environ.get("PORT", 8002))
+    app.run(debug=True, host="0.0.0.0", port=port)
