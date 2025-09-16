@@ -1,4 +1,6 @@
 
+import logging
+import os
 from flask import Flask, request, render_template
 from smallest_qr import smallest_qr, manual_qr, decode
 import base64
@@ -18,53 +20,63 @@ app_data = {
 }
 
 @app.route("/", methods=['GET', 'POST'])
+
 def index():
-    im = None
-    err = False
+    img_data = None
+    error_message = None
+    minimal_version = None
+    decoded_string = None
+    version = 0
+    error_level = None
+    input_string = None
+    elapsed_time = None
 
     if request.method == 'POST':
-        link = request.form.get('link')
-        error = request.form.get('check')
+        input_string = request.form.get('link', '')
+        error_level = request.form.get('check', 'L')
         version = int(request.form.get('version', 0))
-        t0 = time.time()
-        minimal_version = None
+        start_time = time.time()
         try:
             if version:
-                im, err = manual_qr(link, version, error)
+                qr_bytes, error_message = manual_qr(input_string, version, error_level)
             else:
-                im, minimal_version = smallest_qr(link, error=error)
-            
-            app_data["time"] = f"{time.time() - t0:.2f}"
-            encoded_img_data = base64.b64encode(im).decode('utf-8') if not err else None
+                qr_bytes, minimal_version = smallest_qr(input_string, error=error_level)
+                error_message = False
 
-            if not err:
-                sanity = decode(im)
-            else:
-                sanity = None
-            print(sanity)
-            print(encoded_img_data)
-            print(minimal_version)
-            
+            elapsed_time = f"{time.time() - start_time:.2f}"
+            img_data = base64.b64encode(qr_bytes).decode('utf-8') if qr_bytes and not error_message else None
+            decoded_string = decode(qr_bytes) if qr_bytes and not error_message else None
+
             content = {
                 "app_data": app_data,
                 "version": version,
                 "minimal_version": minimal_version,
-                "err": err,
-                "error_level": error,
-                "img_data": encoded_img_data,
-                "input_string": link,
-                "decoded_string": sanity,
+                "err": error_message,
+                "error_level": error_level,
+                "img_data": img_data,
+                "input_string": input_string,
+                "decoded_string": decoded_string,
+                "time": elapsed_time,
             }
-
             return render_template("index.html", **content)
         except Exception as e:
-            print(e)  # Log the exception
-            # Handle the exception as needed, for now, let's proceed to rendering the template
+            app.logger.error(f"Error generating QR code: {e}")
+            error_message = str(e)
 
-    return render_template("index.html", app_data=app_data)
+    # Render default page or error
+    content = {
+        "app_data": app_data,
+        "version": version,
+        "minimal_version": minimal_version,
+        "err": error_message,
+        "error_level": error_level,
+        "img_data": img_data,
+        "input_string": input_string,
+        "decoded_string": decoded_string,
+        "time": elapsed_time,
+    }
+    return render_template("index.html", **content)
 
-import logging
-import os
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
