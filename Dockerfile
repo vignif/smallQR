@@ -8,6 +8,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libzbar0 \
     zbar-tools \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -25,5 +26,8 @@ ENV BASE_PATH=/smallqr
 # Expose port
 EXPOSE 8002
 
+ENV PYTHONUNBUFFERED=1
+
 # Run with Gunicorn (4 workers)
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8002", "app:app"]
+#CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8002", "--capture-output", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8002", "app:app", "--capture-output", "--log-level", "debug", "--access-logfile", "-", "--error-logfile", "-"]

@@ -4,7 +4,7 @@ services:
   smallqr:
     build: .
     ports:
-      - "127.0.0.1:8002:8002"
+      - "8002:8002"
     environment:
       - FLASK_ENV=production
       - PORT=8002

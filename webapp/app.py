@@ -57,6 +57,10 @@ def generate_captcha():
     answer = str(a + b)
     return question, answer
 
+@app.route("/smallqr/", methods=["GET", "POST"])
+def smallqr_index():
+    return index()
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     img_data = None
@@ -70,6 +74,7 @@ def index():
     qr_count = get_qr_counter()
     captcha_error = None
 
+
     if request.method == "GET":
         question, answer = generate_captcha()
         session["captcha_answer"] = answer
@@ -80,12 +85,11 @@ def index():
         captcha_input = request.form.get("captcha", "")
         start_time = time.time()
         correct_answer = session.get("captcha_answer", "")
-        question = request.form.get("captcha_question", "")
+        # Always generate a new captcha for every submit
+        question, answer = generate_captcha()
+        session["captcha_answer"] = answer
         if captcha_input != correct_answer:
             captcha_error = "Captcha answer is incorrect. Please try again."
-            # Regenerate captcha for next try
-            question, answer = generate_captcha()
-            session["captcha_answer"] = answer
         else:
             try:
                 if version:
