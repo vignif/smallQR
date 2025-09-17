@@ -8,26 +8,17 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
 # Detect if running behind reverse proxy (Caddy)
-BASE_PATH = os.environ.get("BASE_PATH", "").rstrip("/")
+BASE_PATH = os.environ.get("BASE_PATH", "/smallqr")
 
 # Create Flask app
 app = Flask(
     __name__,
-    static_url_path=f"{BASE_PATH}/static" if BASE_PATH else "/static",
+    static_url_path="/smallqr/static",
     static_folder="static",
     template_folder="templates"
 )
 
-# ProxyFix: handle SCRIPT_NAME and X-Forwarded headers
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
-
-# Optional: mount under BASE_PATH using DispatcherMiddleware
-if BASE_PATH:
-    from werkzeug.wrappers import Request, Response
-    app.wsgi_app = DispatcherMiddleware(
-        Flask('dummy').wsgi_app,  # dummy root app
-        {BASE_PATH: app.wsgi_app}
-    )
 
 DEVELOPMENT_ENV = os.environ.get("FLASK_ENV", "production") != "production"
 
@@ -40,16 +31,7 @@ app_data = {
     "keywords": "flask, webapp, qrcode, qr",
 }
 
-# Root redirect to BASE_PATH if needed
-@app.route("/")
-def root_redirect():
-    if BASE_PATH:
-        return redirect(f"{BASE_PATH}/")
-    return redirect("/")
-
-# Main endpoint
 @app.route("/", methods=["GET", "POST"])
-@app.route(f"{BASE_PATH}/", methods=["GET", "POST"])
 def index():
     img_data = None
     error_message = None
