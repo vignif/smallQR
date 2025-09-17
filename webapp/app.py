@@ -12,18 +12,18 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 BASE_PATH = os.environ.get("BASE_PATH", "")
 
 
-@app.route("/")
-def root_redirect():
-    if BASE_PATH:
-        return redirect(f"{BASE_PATH}/")
-    return redirect("/")
-
 app = Flask(
     __name__,
     static_url_path=f"{BASE_PATH}/static" if BASE_PATH else "/static",
     static_folder="static",
     template_folder="templates"
 )
+
+@app.route("/")
+def root_redirect():
+    if BASE_PATH:
+        return redirect(f"{BASE_PATH}/")
+    return redirect("/")
 
 # ProxyFix: handle SCRIPT_NAME and X-Forwarded headers for reverse proxy
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
