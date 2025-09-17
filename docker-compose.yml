@@ -9,6 +9,5 @@ services:
       - FLASK_ENV=production
       - PORT=8002
       - BASE_PATH=/smallqr
-      - SCRIPT_NAME=/smallqr
     restart: unless-stopped
     working_dir: /app
