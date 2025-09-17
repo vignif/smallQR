@@ -31,6 +31,21 @@ app_data = {
     "keywords": "flask, webapp, qrcode, qr",
 }
 
+def get_qr_counter():
+    counter_file = "qr_counter.txt"
+    try:
+        with open(counter_file, "r") as f:
+            return int(f.read().strip())
+    except Exception:
+        return 0
+
+def increment_qr_counter():
+    counter_file = "qr_counter.txt"
+    count = get_qr_counter() + 1
+    with open(counter_file, "w") as f:
+        f.write(str(count))
+    return count
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     img_data = None
@@ -41,6 +56,7 @@ def index():
     error_level = None
     input_string = None
     elapsed_time = None
+    qr_count = get_qr_counter()
 
     if request.method == "POST":
         input_string = request.form.get("link", "")
@@ -57,7 +73,9 @@ def index():
 
             elapsed_time = f"{time.time() - start_time:.2f}"
             img_data = base64.b64encode(qr_bytes).decode("utf-8") if qr_bytes and not error_message else None
-            decoded_string = decode(qr_bytes) if qr_bytes and not error_message else None
+            decoded_string = decode(qr_bytes) if qr_bytes and not error_message and qr_bytes else None
+
+            qr_count = increment_qr_counter()
 
         except Exception as e:
             app.logger.error(f"Error generating QR code: {e}")
@@ -74,6 +92,7 @@ def index():
         "decoded_string": decoded_string,
         "time": elapsed_time,
         "base_path": BASE_PATH,
+        "qr_count": qr_count,
     }
 
     return render_template("index.html", **content)

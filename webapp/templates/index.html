@@ -15,14 +15,12 @@
             <div class="col-md align-content-end">
                 <h1 class="display-4">{{ app_data['html_title'] }} </h1>
                 <p class="lead" style="text-align: justify;">{{ app_data['description'] }} </p>
+                <p style="font-size: small;" >QR codes created since 09.2025: <b>{{ qr_count }}</b></p>
             </div>
         </div>
-    
-        <hr class="my-4">
+        <hr class="my-1">
     </div>
-    
-
-    <div class="container mt-4">
+    <div class="container mt-1">
         <div class="row">
             <!-- First Column -->
             <div class="col-sm-6 mb-4 flex-column">
@@ -30,7 +28,7 @@
                     <form action="" method="post">
                         <div class="form-group">
 
-                            <input type="text" class="form-control" id="link" name="link" placeholder="Enter link"
+                            <input type="text" class="form-control" id="link" name="link" placeholder="Enter the text to encode" maxlength="5000"
                                 required>
 
                             <div class="container mt-4">
@@ -140,25 +138,24 @@
 
         </div>
         {% if error_level %}
-        <hr class="my-4">
+        <hr class="my-1">
         <div class="row">
             <div class="p-3">
-                <p class="lead">Sanity Check - Decoding to string the encoded one provided above</p>
+            <div style="font-size: small;">
+                <p>Sanity Check - Decoding to string the encoded one provided above</p>
                 <ul>
                     <li>Provided input: <b>{{ input_string }}</b></li>
                     <li>Decoded data: <b>{{ decoded_string }}</b></li>
                     <li>Decoded data is equal to the input data: <b>{{ decoded_string == input_string }}</b></li>
                 </ul>
             </div>
-
+        </div>
         </div>
         {% endif %}
     </div>
-    <hr class="my-4">
+    <hr class="my-1">
     <p class="lead">Credits: Francesco Vigni</p>
     <p>Built with: <a href="https://pypi.org/project/PyQRCode/" target="_blank">PyQRCode</a> </p>
-
-
 
 </div>
 
