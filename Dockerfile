@@ -1,6 +1,4 @@
-
 # syntax=docker/dockerfile:1
-# Multi-stage build for smaller image size
 FROM python:3.9-slim AS base
 
 # Set working directory
@@ -11,20 +9,22 @@ RUN apt-get update && apt-get install -y \
     libzbar0 \
     zbar-tools \
     && rm -rf /var/lib/apt/lists/*
-    
-# Install dependencies
+
+# Install Python dependencies
 COPY webapp/requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only necessary files
+# Copy app code
 COPY webapp/ .
 
-# Set environment variables
+# Environment variables for Flask / Gunicorn
 ENV FLASK_ENV=production
 ENV PORT=8002
+ENV BASE_PATH=/smallqr
+ENV SCRIPT_NAME=/smallqr
 
 # Expose port
 EXPOSE 8002
 
-# Run the app directly with Python for reliability
-CMD ["python", "app.py"]
+# Run with Gunicorn (4 workers)
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8002", "app:app"]
