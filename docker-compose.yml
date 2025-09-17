@@ -4,11 +4,10 @@ services:
   smallqr:
     build: .
     ports:
-      - "8002:8002"          # Expose container port to host
+      - "8002:8002"
     environment:
       - FLASK_ENV=production
       - PORT=8002
       - BASE_PATH=/smallqr
-      - SCRIPT_NAME=/smallqr
     restart: unless-stopped
     working_dir: /app

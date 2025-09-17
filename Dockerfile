@@ -21,7 +21,6 @@ COPY webapp/ .
 ENV FLASK_ENV=production
 ENV PORT=8002
 ENV BASE_PATH=/smallqr
-ENV SCRIPT_NAME=/smallqr
 
 # Expose port
 EXPOSE 8002
