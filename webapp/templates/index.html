@@ -65,6 +65,14 @@
                                 </div>
                             </div>
 
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" id="captcha" name="captcha" placeholder="{{ captcha_question }}" required>
+                                    <input type="hidden" name="captcha_question" value="{{ captcha_question }}">
+                                    {% if captcha_error %}
+                                    <div class="alert alert-warning mt-2">{{ captcha_error }}</div>
+                                    {% endif %}
+                                </div>
+
                             <div class="container mt-4">
 
                                 <div class="form-check form-switch">

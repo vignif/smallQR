@@ -2,7 +2,8 @@ import logging
 import os
 import time
 import base64
-from flask import Flask, request, render_template, redirect, url_for
+import random
+from flask import Flask, request, render_template, redirect, url_for, session
 from smallest_qr import smallest_qr, manual_qr, decode
 from werkzeug.middleware.proxy_fix import ProxyFix
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
@@ -17,6 +18,7 @@ app = Flask(
     static_folder="static",
     template_folder="templates"
 )
+app.secret_key = os.environ.get("SECRET_KEY", "change_this_secret")
 
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
@@ -46,6 +48,15 @@ def increment_qr_counter():
         f.write(str(count))
     return count
 
+import random
+
+def generate_captcha():
+    a = random.randint(1, 9)
+    b = random.randint(1, 9)
+    question = f"What is {a} + {b}?"
+    answer = str(a + b)
+    return question, answer
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     img_data = None
@@ -57,29 +68,41 @@ def index():
     input_string = None
     elapsed_time = None
     qr_count = get_qr_counter()
+    captcha_error = None
 
-    if request.method == "POST":
+    if request.method == "GET":
+        question, answer = generate_captcha()
+        session["captcha_answer"] = answer
+    else:
         input_string = request.form.get("link", "")
         error_level = request.form.get("check", "L")
         version = int(request.form.get("version", 0))
+        captcha_input = request.form.get("captcha", "")
         start_time = time.time()
+        correct_answer = session.get("captcha_answer", "")
+        question = request.form.get("captcha_question", "")
+        if captcha_input != correct_answer:
+            captcha_error = "Captcha answer is incorrect. Please try again."
+            # Regenerate captcha for next try
+            question, answer = generate_captcha()
+            session["captcha_answer"] = answer
+        else:
+            try:
+                if version:
+                    qr_bytes, error_message = manual_qr(input_string, version, error_level)
+                else:
+                    qr_bytes, minimal_version = smallest_qr(input_string, error=error_level)
+                    error_message = False
 
-        try:
-            if version:
-                qr_bytes, error_message = manual_qr(input_string, version, error_level)
-            else:
-                qr_bytes, minimal_version = smallest_qr(input_string, error=error_level)
-                error_message = False
+                elapsed_time = f"{time.time() - start_time:.2f}"
+                img_data = base64.b64encode(qr_bytes).decode("utf-8") if qr_bytes and not error_message else None
+                decoded_string = decode(qr_bytes) if qr_bytes and not error_message and qr_bytes else None
 
-            elapsed_time = f"{time.time() - start_time:.2f}"
-            img_data = base64.b64encode(qr_bytes).decode("utf-8") if qr_bytes and not error_message else None
-            decoded_string = decode(qr_bytes) if qr_bytes and not error_message and qr_bytes else None
+                qr_count = increment_qr_counter()
 
-            qr_count = increment_qr_counter()
-
-        except Exception as e:
-            app.logger.error(f"Error generating QR code: {e}")
-            error_message = str(e)
+            except Exception as e:
+                app.logger.error(f"Error generating QR code: {e}")
+                error_message = str(e)
 
     content = {
         "app_data": app_data,
@@ -93,6 +116,8 @@ def index():
         "time": elapsed_time,
         "base_path": BASE_PATH,
         "qr_count": qr_count,
+        "captcha_question": question,
+        "captcha_error": captcha_error,
     }
 
     return render_template("index.html", **content)
