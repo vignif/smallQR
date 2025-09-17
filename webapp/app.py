@@ -81,4 +81,4 @@ def index():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     port = int(os.environ.get("PORT", 8002))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    app.run(debug=True, host="127.0.0.1", port=port)
