@@ -26,4 +26,4 @@ ENV BASE_PATH=/smallqr
 EXPOSE 8002
 
 # Run with Gunicorn (4 workers)
-CMD ["gunicorn", "-w", "4", "-b", "127.0.0.1:8002", "app:app"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8002", "app:app"]
