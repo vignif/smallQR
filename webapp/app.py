@@ -1,7 +1,7 @@
 
 import logging
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from smallest_qr import smallest_qr, manual_qr, decode
 import base64
 import time
@@ -11,6 +11,12 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 # You can set an environment variable "BASE_PATH=/smallqr" on the server
 BASE_PATH = os.environ.get("BASE_PATH", "")
 
+
+@app.route("/")
+def root_redirect():
+    if BASE_PATH:
+        return redirect(f"{BASE_PATH}/")
+    return redirect("/")
 
 app = Flask(
     __name__,
