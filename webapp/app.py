@@ -26,7 +26,7 @@ DEVELOPMENT_ENV = os.environ.get("FLASK_ENV", "production") != "production"
 
 app_data = {
     "name": "Smallest QR Code Generator for links",
-    "description": "This app allows you to create the smallest QR code given your input data.",
+    "description": "Effortlessly create ultra-compact, high-quality QR codes for your links or text. Fast, private, and beautifully simple—just paste, click, and share your scannable magic.",
     "author": "Francesco Vigni",
     "html_title": "smallQR",
     "project_name": "SmallestQR",
