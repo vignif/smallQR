@@ -1,4 +1,3 @@
-
 import logging
 import os
 from flask import Flask, request, render_template
@@ -6,7 +5,16 @@ from smallest_qr import smallest_qr, manual_qr, decode
 import base64
 import time
 
-app = Flask(__name__)
+# Detect if running behind reverse proxy (Caddy)
+# You can set an environment variable "BASE_PATH=/smallqr" on the server
+BASE_PATH = os.environ.get("BASE_PATH", "")
+
+app = Flask(
+    __name__,
+    static_url_path=f"{BASE_PATH}/static" if BASE_PATH else "/static",
+    static_folder="static",
+    template_folder="templates"
+)
 
 DEVELOPMENT_ENV = True
 
@@ -19,8 +27,8 @@ app_data = {
     "keywords": "flask, webapp, qrcode, qr",
 }
 
-@app.route("/", methods=['GET', 'POST'])
-
+# Add BASE_PATH prefix if set
+@app.route(f"{BASE_PATH}/", methods=['GET', 'POST'])
 def index():
     img_data = None
     error_message = None
@@ -57,6 +65,7 @@ def index():
                 "input_string": input_string,
                 "decoded_string": decoded_string,
                 "time": elapsed_time,
+                "base_path": BASE_PATH,
             }
             return render_template("index.html", **content)
         except Exception as e:
@@ -74,6 +83,7 @@ def index():
         "input_string": input_string,
         "decoded_string": decoded_string,
         "time": elapsed_time,
+        "base_path": BASE_PATH,
     }
     return render_template("index.html", **content)
 
@@ -81,4 +91,6 @@ def index():
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     port = int(os.environ.get("PORT", 8002))
-    app.run(debug=True, host="127.0.0.1", port=port)
+    host = "0.0.0.0"  # Bind to all interfaces so Caddy can reach it
+    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug, host=host, port=port)
