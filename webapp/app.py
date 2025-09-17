@@ -1,13 +1,16 @@
+
 import logging
 import os
 from flask import Flask, request, render_template
 from smallest_qr import smallest_qr, manual_qr, decode
 import base64
 import time
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Detect if running behind reverse proxy (Caddy)
 # You can set an environment variable "BASE_PATH=/smallqr" on the server
 BASE_PATH = os.environ.get("BASE_PATH", "")
+
 
 app = Flask(
     __name__,
@@ -15,6 +18,9 @@ app = Flask(
     static_folder="static",
     template_folder="templates"
 )
+
+# ProxyFix: handle SCRIPT_NAME and X-Forwarded headers for reverse proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
 DEVELOPMENT_ENV = True
 
@@ -88,9 +94,12 @@ def index():
     return render_template("index.html", **content)
 
 
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     port = int(os.environ.get("PORT", 8002))
     host = "0.0.0.0"  # Bind to all interfaces so Caddy can reach it
     debug = os.environ.get("FLASK_DEBUG", "0") == "1"
+    # Document: set BASE_PATH=/smallqr and SCRIPT_NAME=/smallqr in Docker/Caddy
+    # Caddy should send header_up X-Forwarded-Prefix /smallqr
     app.run(debug=debug, host=host, port=port)
