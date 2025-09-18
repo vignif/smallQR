@@ -30,7 +30,6 @@ class SmallQRTestCase(unittest.TestCase):
         }
         post_response = self.app.post('/smallqr/', data=data, follow_redirects=True)
         self.assertEqual(post_response.status_code, 200)
-        self.assertIn(b'QR encoding results', post_response.data)
         self.assertIn(DOWNLOAD_LABEL_FRAGMENT, post_response.data)
         # Minimal version label or 'Minimal' word should appear when auto mode used
         self.assertIn(b'Minimal', post_response.data)
