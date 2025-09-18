@@ -29,7 +29,7 @@ SmallQR is a web application that allows users to create the smallest QR code gi
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/vignif/SmallQR-Web-App.git
+   git clone git@github.com:vignif/smallQR.git
 
 <p align="left">
   <img alt="Python Version" src="https://img.shields.io/badge/Python-3.9-blue.svg" />
