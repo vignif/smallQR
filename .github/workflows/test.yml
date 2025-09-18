@@ -18,10 +18,15 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: Install dependencies
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libzbar0 zbar-tools curl
+
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r webapp/requirements.txt
+          pip install --no-cache-dir -r webapp/requirements.txt
 
       - name: Run tests
         run: |

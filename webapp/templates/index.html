@@ -101,45 +101,44 @@
             <!-- Second Column -->
             <div class="col-sm-6 flex-column">
                 <div class="p-3">
-                    <!-- Content for the second column -->
                     {% if err %}
                     <div class="alert alert-danger" role="alert">
                         {{ err}}
                     </div>
                     {% endif %}
                     {% if img_data %}
-                    <p class="lead">QR encoding results:</p>
-                        <table class="table">
-                            <tbody>
-                                {% if minimal_version %}
-                                <tr>
-                                    <th scope="row">Minimal <b>estimated</b> version</th>
-                                    <td>{{ minimal_version }}</td>
-                                </tr>
-                                {% else %}
-                                <tr>
-                                    <th scope="row">Version</th>
-                                    <td>{{ version }}</td>
-                                </tr>
-                                {% endif %}
-                                <tr>
-                                    <th scope="row">Error correction level</th>
-                                    <td>{{ error_level }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Seconds taken</th>
-                                    <td>{{ time }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        
-                        <a href="#" id="downloadBtn" class="btn btn-primary btn-lg m-auto">Download QR Code</a>
-                    
-
-                    <img src="data:image/png;base64,{{ img_data }}" height="50%" width="65%" id="qrImage">
-                    
-                    
-
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <p class="lead">QR encoding results:</p>
+                            <table class="table table-sm">
+                                <tbody>
+                                    {% if minimal_version %}
+                                    <tr>
+                                        <th scope="row">Minimal <b>estimated</b> version</th>
+                                        <td>{{ minimal_version }}</td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <th scope="row">Version</th>
+                                        <td>{{ version }}</td>
+                                    </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <th scope="row">Error correction level</th>
+                                        <td>{{ error_level }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Seconds taken</th>
+                                        <td>{{ time }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="d-flex flex-column align-items-center">
+                                <img src="data:image/png;base64,{{ img_data }}" class="img-fluid mb-3" style="max-width: 320px; width: 100%; height: auto;" id="qrImage" alt="QR Code">
+                                <a href="#" id="downloadBtn" class="btn btn-primary btn-lg w-100">Download QR Code</a>
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
             </div>

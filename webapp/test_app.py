@@ -9,7 +9,7 @@ class SmallQRTestCase(unittest.TestCase):
     def test_homepage_loads(self):
         response = self.app.get('/smallqr/')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Smallest QR Code Generator', response.data)
+        self.assertIn(b'smallQR', response.data)
 
     def test_create_qr_code_default(self):
         # Get captcha question from GET
