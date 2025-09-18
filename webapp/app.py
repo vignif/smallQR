@@ -29,6 +29,13 @@ app.config.from_object(ConfigClass)
 app.secret_key = app.config["SECRET_KEY"]
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
+# Security & session hardening
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+)
+
 app_data = {
     "name": "Smallest QR Code Generator for links",
     "description": "Effortlessly create ultra-compact, high-quality QR codes for your links or text. Fast, private, and beautifully simple. Just paste, click, and share your scannable magic.",
@@ -128,6 +135,30 @@ def _render(state: Dict[str, Any]):
         **state,
     }
     return render_template("index.html", **payload)
+
+
+@app.route("/privacy")
+def privacy():
+    return render_template("privacy.html", app_data=app_data, base_path=BASE_PATH)
+
+
+@app.after_request
+def _security_headers(resp):  # pragma: no cover - header-level
+    resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "DENY")
+    resp.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
+    # Allow current CDNs + data images (QR) - tighten later if self-hosting assets
+    csp = (
+        "default-src 'self'; "
+        "img-src 'self' data:; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com; "
+        "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; "
+        "object-src 'none'; "
+        "base-uri 'self'; form-action 'self'"
+    )
+    resp.headers.setdefault("Content-Security-Policy", csp)
+    return resp
 
 
 if __name__ == "__main__":  # pragma: no cover

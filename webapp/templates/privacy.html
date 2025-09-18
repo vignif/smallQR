@@ -1,0 +1,46 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class="sq-form-card sq-stack">
+  <h1 class="mb-1">Privacy & Data Protection</h1>
+  <p>This service generates QR codes from text you provide. We do not persist the text or the generated QR code image on disk.</p>
+
+  <h2 class="h5">Data We Process</h2>
+  <ul>
+    <li><strong>Submitted text</strong>: processed in memory only to produce a QR code, then discarded.</li>
+    <li><strong>Session captcha answer</strong>: stored briefly to mitigate automated abuse.</li>
+    <li><strong>Technical metadata</strong>: IP address & user-agent appear in standard server/access logs (infrastructure-level).</li>
+    <li><strong>Aggregate counter</strong>: total number of QR codes generated (no personal data).</li>
+  </ul>
+
+  <h2 class="h5">Purpose & Legal Basis</h2>
+  <p>Purpose: provide a fast QR code generator. Legal basis: Legitimate Interest (minimal, proportionate processing).</p>
+
+  <h2 class="h5">Retention</h2>
+  <p>No persistence of input text or generated QR payload. Session data expires automatically. Logs rotate per hosting defaults.</p>
+
+  <h2 class="h5">Cookies</h2>
+  <p>Only a strictly necessary session cookie (captcha). No analytics, tracking, or marketing cookies.</p>
+
+  <h2 class="h5">Your Rights</h2>
+  <p>You may request information or deletion; however, we generally cannot identify you post-response because we do not store the submitted data.</p>
+
+  <h2 class="h5">Third Parties</h2>
+  <ul>
+    <li>Static asset CDNs (Bootstrap / JS) – receive your IP for asset delivery.</li>
+    <li>Hosting / infrastructure provider – may retain standard access logs.</li>
+    <li>Coveralls (coverage badge) – loads an image badge you view.</li>
+  </ul>
+
+  <h2 class="h5">Security Measures</h2>
+  <ul>
+    <li>HTTPS transport (expected in production deployment)</li>
+    <li>Minimal surface: no database, no persistent user content</li>
+    <li>Hardened security headers (CSP, Referrer-Policy, X-Frame-Options)</li>
+  </ul>
+
+  <h2 class="h5">Contact</h2>
+  <p>For privacy inquiries: <a href="mailto:francesco.vgn@gmail.com">francesco.vgn@gmail.com</a></p>
+
+  <p class="sq-muted mb-0">Last updated: 2025-09-18</p>
+</div>
+{% endblock %}

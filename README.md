@@ -19,6 +19,19 @@ SmallQR is a web application that allows users to create the smallest QR code gi
 - QR code version selection
 - In-memory storage (no disk storage)
 
+## Privacy & GDPR
+
+This application is designed with data minimization:
+
+- User input is processed transiently in memory only to generate a QR code and is not persisted.
+- A short-lived session value stores only a captcha answer (anti-abuse).
+- No analytics, tracking, or marketing cookies.
+- Aggregate counter tracks only total number of QR codes generated.
+- Security headers (CSP / Referrer-Policy / etc.) are applied.
+
+See the dedicated [Privacy page](/privacy) in the running app for full details (legal basis, retention, rights, third parties).
+
+
 
 ## App Available on a VPS
 
