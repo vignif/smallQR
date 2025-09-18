@@ -1,28 +1,33 @@
+"""Flask application entrypoint (kept for gunicorn import).
+
+Refactored to use a service & utility layer. All heavy logic moved out
+for easier testing and future extension.
+"""
+from __future__ import annotations
 import logging
 import os
 import time
 import base64
-import random
-from flask import Flask, request, render_template, redirect, url_for, session
-from smallest_qr import smallest_qr, manual_qr, decode
+from typing import Any, Dict
+from flask import Flask, request, render_template, session
 from werkzeug.middleware.proxy_fix import ProxyFix
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
 
-# Detect if running behind reverse proxy (Caddy)
-BASE_PATH = os.environ.get("BASE_PATH", "/smallqr")
+from config import get_config
+from utils.captcha import generate_captcha, validate_captcha
+from utils.counter import get_counter, increment_counter
+from services.qr_service import generate_qr_min_version, generate_qr_manual, decode_qr
 
-# Create Flask app
+ConfigClass = get_config()
+
 app = Flask(
     __name__,
-    static_url_path="/smallqr/static",
+    static_url_path="/smallqr/static",  # ensure path prefix for proxy
     static_folder="static",
-    template_folder="templates"
+    template_folder="templates",
 )
-app.secret_key = os.environ.get("SECRET_KEY", "change_this_secret")
-
+app.config.from_object(ConfigClass)
+app.secret_key = app.config["SECRET_KEY"]
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
-
-DEVELOPMENT_ENV = os.environ.get("FLASK_ENV", "production") != "production"
 
 app_data = {
     "name": "Smallest QR Code Generator for links",
@@ -33,103 +38,98 @@ app_data = {
     "keywords": "flask, webapp, qrcode, qr",
 }
 
-def get_qr_counter():
-    counter_file = "qr_counter.txt"
-    try:
-        with open(counter_file, "r") as f:
-            return int(f.read().strip())
-    except Exception:
-        return 0
+COUNTER_FILE = app.config["COUNTER_FILE"]
+BASE_PATH = app.config["BASE_PATH"]
+ALLOWED_ERROR_LEVELS = app.config["ALLOWED_ERROR_LEVELS"]
+DEFAULT_ERROR_LEVEL = app.config["DEFAULT_ERROR_LEVEL"]
+MAX_INPUT_LENGTH = app.config["MAX_INPUT_LENGTH"]
 
-def increment_qr_counter():
-    counter_file = "qr_counter.txt"
-    count = get_qr_counter() + 1
-    with open(counter_file, "w") as f:
-        f.write(str(count))
-    return count
-
-import random
-
-def generate_captcha():
-    a = random.randint(1, 9)
-    b = random.randint(1, 9)
-    question = f"What is {a} + {b}?"
-    answer = str(a + b)
-    return question, answer
 
 @app.route("/smallqr/", methods=["GET", "POST"])
-def smallqr_index():
+def smallqr_index():  # pragma: no cover - proxy convenience
     return index()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    img_data = None
-    error_message = None
-    minimal_version = None
-    decoded_string = None
-    version = 0
-    error_level = None
-    input_string = None
-    elapsed_time = None
-    qr_count = get_qr_counter()
-    captcha_error = None
-
-
-    if request.method == "GET":
-        question, answer = generate_captcha()
-        session["captcha_answer"] = answer
-    else:
-        input_string = request.form.get("link", "")
-        error_level = request.form.get("check", "L")
-        version = int(request.form.get("version", 0))
-        captcha_input = request.form.get("captcha", "")
-        start_time = time.time()
-        correct_answer = session.get("captcha_answer", "")
-        # Always generate a new captcha for every submit
-        question, answer = generate_captcha()
-        session["captcha_answer"] = answer
-        if captcha_input != correct_answer:
-            captcha_error = "Captcha answer is incorrect. Please try again."
-        else:
-            try:
-                if version:
-                    qr_bytes, error_message = manual_qr(input_string, version, error_level)
-                else:
-                    qr_bytes, minimal_version = smallest_qr(input_string, error=error_level)
-                    error_message = False
-
-                elapsed_time = f"{time.time() - start_time:.2f}"
-                img_data = base64.b64encode(qr_bytes).decode("utf-8") if qr_bytes and not error_message else None
-                decoded_string = decode(qr_bytes) if qr_bytes and not error_message and qr_bytes else None
-
-                qr_count = increment_qr_counter()
-
-            except Exception as e:
-                app.logger.error(f"Error generating QR code: {e}")
-                error_message = str(e)
-
-    content = {
-        "app_data": app_data,
-        "version": version,
-        "minimal_version": minimal_version,
-        "err": error_message,
-        "error_level": error_level,
-        "img_data": img_data,
-        "input_string": input_string,
-        "decoded_string": decoded_string,
-        "time": elapsed_time,
-        "base_path": BASE_PATH,
-        "qr_count": qr_count,
-        "captcha_question": question,
-        "captcha_error": captcha_error,
+    """Handle QR generation UI."""
+    state: Dict[str, Any] = {
+        "version": 0,
+        "minimal_version": None,
+        "err": None,
+        "error_level": None,
+        "img_data": None,
+        "input_string": None,
+        "decoded_string": None,
+        "time": None,
+        "qr_count": get_counter(COUNTER_FILE),
+        "captcha_question": None,
+        "captcha_error": None,
     }
 
-    return render_template("index.html", **content)
+    # GET: issue captcha
+    if request.method == "GET":
+        q, a = generate_captcha()
+        session["captcha_answer"] = a
+        state["captcha_question"] = q
+        return _render(state)
+
+    # POST processing
+    start = time.time()
+    raw_input = (request.form.get("link", "") or "").strip()
+    error_level = request.form.get("check", DEFAULT_ERROR_LEVEL)
+    version = int(request.form.get("version", 0) or 0)
+    captcha_input = request.form.get("captcha", "")
+    expected = session.get("captcha_answer", "")
+
+    # Always refresh captcha
+    q_new, a_new = generate_captcha()
+    session["captcha_answer"] = a_new
+    state["captcha_question"] = q_new
+
+    state["input_string"] = raw_input
+    state["error_level"] = error_level
+    state["version"] = version
+
+    # Validation
+    if not raw_input:
+        state["err"] = "Input cannot be empty"
+        return _render(state)
+    if len(raw_input) > MAX_INPUT_LENGTH:
+        state["err"] = f"Input exceeds maximum length of {MAX_INPUT_LENGTH} characters"
+        return _render(state)
+    if error_level not in ALLOWED_ERROR_LEVELS:
+        state["err"] = "Invalid error correction level"
+        return _render(state)
+    if not validate_captcha(captcha_input, expected):
+        state["captcha_error"] = "Captcha answer is incorrect. Please try again."
+        return _render(state)
+
+    try:
+        if version:
+            qr_bytes = generate_qr_manual(raw_input, version, error_level)
+        else:
+            qr_bytes, minimal_version = generate_qr_min_version(raw_input, error_level)
+            state["minimal_version"] = minimal_version
+        state["time"] = f"{time.time() - start:.2f}"
+        state["img_data"] = base64.b64encode(qr_bytes).decode("utf-8")
+        state["decoded_string"] = decode_qr(qr_bytes)
+        state["qr_count"] = increment_counter(COUNTER_FILE)
+    except Exception as exc:  # broad to surface error to user
+        logging.exception("Error generating QR code")
+        state["err"] = str(exc)
+
+    return _render(state)
 
 
-if __name__ == "__main__":
+def _render(state: Dict[str, Any]):
+    payload = {
+        "app_data": app_data,
+        "base_path": BASE_PATH,
+        **state,
+    }
+    return render_template("index.html", **payload)
+
+
+if __name__ == "__main__":  # pragma: no cover
     logging.basicConfig(level=logging.INFO)
-    port = int(os.environ.get("PORT", 8002))
-    host = "0.0.0.0"
-    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
-    app.run(debug=debug, host=host, port=port)
+    app.run(debug=app.config.get("DEBUG", False), host="0.0.0.0", port=app.config["PORT"])

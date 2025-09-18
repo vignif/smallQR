@@ -1,0 +1,65 @@
+/* Additional layered custom styles */
+html { scroll-behavior: smooth; }
+summary::-webkit-details-marker { display:none; }
+.chevron { font-weight:600; }
+.btn-primary { box-shadow: 0 2px 4px rgba(13,110,253,.3); }
+.btn-primary:hover { box-shadow:0 4px 10px rgba(13,110,253,.35); }
+#qrImage { image-rendering: pixelated; }
+.dark body { background:#0f172a; color:#e2e8f0; }
+.dark .sq-form-card, .dark .card-body { background:#1e293b; border-color:#334155; }
+.dark #link { background:#334155; color:#e2e8f0; }
+.dark .btn-primary { box-shadow:0 2px 4px rgba(59,130,246,.4); }
+
+/* Spacing scale (4px baseline) */
+:root { 
+	--sq-space-1: .25rem; /*4px*/
+	--sq-space-2: .5rem;  /*8px*/
+	--sq-space-3: .75rem; /*12px*/
+	--sq-space-4: 1rem;   /*16px*/
+	--sq-space-5: 1.5rem; /*24px*/
+	--sq-space-6: 2rem;   /*32px*/
+}
+
+/* Vertical stack utility: applies margin-top to direct children except first */
+.sq-stack > * + * { margin-top: var(--sq-stack-space, var(--sq-space-4)); }
+.sq-stack-tight > * + * { margin-top: var(--sq-space-2); }
+.sq-stack-loose > * + * { margin-top: var(--sq-space-5); }
+
+/* Gap utilities for flex/inline layouts when gap unsupported override (legacy) */
+.sq-gap-1 { gap: var(--sq-space-1); }
+.sq-gap-2 { gap: var(--sq-space-2); }
+.sq-gap-3 { gap: var(--sq-space-3); }
+.sq-gap-4 { gap: var(--sq-space-4); }
+.sq-gap-5 { gap: var(--sq-space-5); }
+.sq-gap-6 { gap: var(--sq-space-6); }
+
+/* Section wrapper to normalize vertical rhythm */
+.sq-section { padding-top: var(--sq-space-5); padding-bottom: var(--sq-space-5); }
+.sq-section-tight { padding-top: var(--sq-space-3); padding-bottom: var(--sq-space-3); }
+
+/* Muted text helper */
+.sq-muted { color: var(--sq-muted); font-size: .875rem; }
+
+/* Fine tune details spacing */
+details#advancedSettings > div { padding-top: var(--sq-space-2); }
+details#advancedSettings p.lead { margin-top: 0; }
+
+/* Remove extraneous bottom margin when button follows form */
+form #submitBtn { margin-top: var(--sq-space-4); }
+
+/* Card adjustments */
+.sq-results-card.card { border:1px solid var(--sq-border); border-radius: var(--sq-radius); }
+.sq-results-card .card-body { padding: var(--sq-space-4); }
+
+/* Utility to constrain QR image area spacing */
+.sq-qr-wrapper img { margin-bottom: var(--sq-space-3); }
+
+
+.jumbotron.sq-section {
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+    }
+    .sq-footer {
+        margin-top:auto;
+    }

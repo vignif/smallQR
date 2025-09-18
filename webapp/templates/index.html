@@ -1,153 +1,130 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-<div class="jumbotron">
+<div class="jumbotron sq-section pt-4">
     <div class="container">
-        <div class="row align-items-center">
-            <!-- Image column -->
-            <div class="col-md-5 text-center">
-                <a href="/smallqr/">
-                    <img src="{{ url_for('static', filename='main.png') }}" alt="QR Code" width="436" height="238" >
-                </a>
-            </div>
-    
-            <!-- Text column -->
-            <div class="col-md align-content-end">
-                <h1 class="display-4">{{ app_data['html_title'] }} </h1>
-                <p class="lead" style="text-align: justify;">{{ app_data['description'] }} </p>
-                <p style="font-size: small;" >QR codes created since 09.2025: <b>{{ qr_count }}</b></p>
+        <div class="row">
+            <div class="col-md sq-stack-tight">
+                <a href="/smallqr/" class="text-decoration-none"><h1 class="display-5 mb-0">{{ app_data['html_title'] }}</h1></a>
+                <p class="lead mb-1" style="text-align: justify;">{{ app_data['description'] }}</p>
+                <p class="sq-muted mb-0">QR codes created since 09.2025: <b>{{ qr_count }}</b></p>
             </div>
         </div>
-        <hr class="my-1">
     </div>
-    <div class="container mt-1">
-        <div class="row">
+    <div class="container mt-3">
+        <div class="row g-4">
             <!-- First Column -->
-            <div class="col-sm-6 mb-4 flex-column">
-                <div class="p-3">
-                    <form action="" method="post">
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="link" name="link" placeholder="Enter the text to encode" maxlength="5000" required>
-
-                            <div class="mb-3 mt-3">
+            <div class="col-sm-6 flex-column">
+                <div class="sq-form-card sq-stack">
+                    <form action="" method="post" id="qrForm">
+                        <div class="sq-stack">
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="link" name="link" placeholder="Enter the text to encode" maxlength="5000" required>
+                            </div>
+                            <div class="form-group sq-stack-tight">
                                 <input type="text" class="form-control" id="captcha" name="captcha" placeholder="{{ captcha_question }}" required>
                                 <input type="hidden" name="captcha_question" value="{{ captcha_question }}">
                                 {% if captcha_error %}
-                                <div class="alert alert-warning mt-2">{{ captcha_error }}</div>
+                                <div class="alert alert-warning mb-0">{{ captcha_error }}</div>
                                 {% endif %}
                             </div>
-
-                                                        <details id="advancedSettings" class="mt-3">
-                                                            <summary class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1" style="list-style:none;">
-                                                                <span class="chevron" aria-hidden="true" style="display:inline-block; transition: transform .25s ease;">▸</span>
-                                                                <span class="ms-1">Advanced settings</span>
-                                                            </summary>
-                                                            <div class="pt-3">
-                                <p class="lead my-3">Set the error correction level of the code. (L default)</p>
-                                <div class="row">
-                                    <div class="col-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="check" value="L" checked>
-                                            <label class="form-check-label">Low (L)</label>
+                            <details id="advancedSettings" class="sq-stack-tight">
+                                <summary class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center sq-gap-2" style="list-style:none;">
+                                    <span class="chevron" aria-hidden="true" style="display:inline-block; transition: transform .25s ease;">▸</span>
+                                    <span class="ms-1">Advanced settings</span>
+                                </summary>
+                                <div class="sq-stack">
+                                    <p class="lead">Set the error correction level of the code. (L default)</p>
+                                    <div class="row gy-2">
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="check" value="L" checked><label class="form-check-label">Low (L)</label></div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="check" value="M"><label class="form-check-label">Medium (M)</label></div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="check" value="Q"><label class="form-check-label">Average (Q)</label></div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="form-check"><input class="form-check-input" type="radio" name="check" value="H"><label class="form-check-label">High (H)</label></div>
                                         </div>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="check" value="M">
-                                            <label class="form-check-label">Medium (M)</label>
-                                        </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="enableSliderSwitch" checked>
+                                        <label class="form-check-label" for="enableSliderSwitch">Automatic version</label>
                                     </div>
-                                    <div class="col-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="check" value="Q">
-                                            <label class="form-check-label">Average (Q)</label>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="check" value="H">
-                                            <label class="form-check-label">High (H)</label>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="exampleRange" class="form-label">Select version</label>
+                                        <input type="range" class="form-range" min="1" max="40" step="1" id="exampleRange" name="version" disabled value="0">
+                                        <p id="sliderValue" class="mb-1">Current Value: Automatic</p>
+                                        <small class="text-muted">The version parameter specifies the size and data capacity of the code (1-40).</small>
                                     </div>
                                 </div>
-
-                                <hr class="my-3">
-
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="enableSliderSwitch" checked>
-                                    <label class="form-check-label" for="enableSliderSwitch">Automatic version</label>
-                                </div>
-
-                                                                <div class="form-group mt-3">
-                                    <label for="exampleRange" class="form-label">Select version</label>
-                                    <input type="range" class="form-range" min="1" max="40" step="1" id="exampleRange" name="version" disabled value="0">
-                                    <p id="sliderValue">Current Value: Automatic</p>
-                                    <small>The version parameter specifies the size and data capacity of the code (1-40).</small>
-                                </div>
-                                                            </div>
-                                                        </details>
+                            </details>
+                            <button type="submit" id="submitBtn" class="btn btn-primary btn-lg d-inline-flex align-items-center sq-gap-2">
+                                <span class="spinner-border spinner-border-sm d-none" id="submitSpinner" role="status" aria-hidden="true"></span>
+                                <span>Create QR Code</span>
+                            </button>
                         </div>
-
-                        <button type="submit" class="btn btn-primary btn-lg my-3">Create QR Code</button>
                     </form>
                 </div>
             </div>
 
             <!-- Second Column -->
+            {% if err %}
+            <div class="alert alert-danger mb-0" role="alert">{{ err}}</div>
+            {% endif %}
+            {% if img_data %}
             <div class="col-sm-6 flex-column">
-                <div class="p-3">
-                    {% if err %}
-                    <div class="alert alert-danger" role="alert">
-                        {{ err}}
-                    </div>
-                    {% endif %}
-                    {% if img_data %}
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <p class="lead">QR encoding results:</p>
-                            <table class="table table-sm">
-                                <tbody>
-                                    {% if minimal_version %}
-                                    <tr>
-                                        <th scope="row">Minimal <b>estimated</b> version</th>
-                                        <td>{{ minimal_version }}</td>
-                                    </tr>
-                                    {% else %}
-                                    <tr>
-                                        <th scope="row">Version</th>
-                                        <td>{{ version }}</td>
-                                    </tr>
-                                    {% endif %}
-                                    <tr>
-                                        <th scope="row">Error correction level</th>
-                                        <td>{{ error_level }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Seconds taken</th>
-                                        <td>{{ time }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="d-flex flex-column align-items-center">
-                                <img src="data:image/png;base64,{{ img_data }}" class="img-fluid mb-3" style="max-width: 320px; width: 100%; height: auto;" id="qrImage" alt="QR Code">
-                                <a href="#" id="downloadBtn" class="btn btn-primary btn-lg w-100">Download QR Code</a>
+                <div class="sq-form-card sq-stack">
+                    <div class="sq-stack">
+                    <p class="lead mb-0">Your QRcode:</p>
+                    <details class="sq-stack-tight sq-muted mb-3" >
+                        <summary>Details</summary>
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                {% if minimal_version %}
+                                <tr>
+                                    <th scope="row">Minimal <b>estimated</b> version</th>
+                                    <td>{{ minimal_version }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <th scope="row">Version</th>
+                                    <td>{{ version }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <th scope="row">Error correction level</th>
+                                    <td>{{ error_level }}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Seconds taken</th>
+                                    <td>{{ time }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </details>
+                        <div class="d-flex flex-column align-items-center sq-qr-wrapper">
+                            <img src="data:image/png;base64,{{ img_data }}" class="img-fluid" style="max-width: 320px; width: 100%; height: auto;" id="qrImage" alt="QR Code">
+                            <div class="sq-actions d-flex flex-column flex-sm-row sq-gap-2 w-100 justify-content-center">
+                                <a href="#" id="downloadBtn" class="btn btn-primary">Download</a>
+                                <button type="button" id="copyBtn" class="btn btn-outline-secondary">Copy PNG (Base64)</button>
                             </div>
                         </div>
                     </div>
-                    {% endif %}
                 </div>
             </div>
+            {% endif %}
 
         </div>
         {% if error_level %}
-        <hr class="my-1">
-        <div class="row">
-            <div class="p-3">
-            <div style="font-size: small;">
-                <details>
+        <div class="row mt-4">
+            <div class="col-12">
+                <details class="sq-stack-tight sq-muted">
                     <summary>Sanity Check</summary>
-                    <p>Decoding to string the encoded one provided above</p>
-                    <ul>
+                    <p class="mb-1">Decoding to string the encoded one provided above</p>
+                    <ul class="mb-0">
                         <li>Provided input: <b>{{ input_string }}</b></li>
                         <li>Decoded data: <b>{{ decoded_string }}</b></li>
                         <li>Decoded data is equal to the input data: <b>{{ decoded_string == input_string }}</b></li>
@@ -155,12 +132,20 @@
                 </details>
             </div>
         </div>
-        </div>
         {% endif %}
     </div>
-    <hr class="my-1">
-    <p class="lead">Credits: Francesco Vigni</p>
-    <p>Built with: <a href="https://pypi.org/project/PyQRCode/" target="_blank">PyQRCode</a> </p>
+    
+    <footer class="sq-footer">
+            <div class="container mt-5">
+                    <hr>
+                    <div class="row">
+                            <div class="col-12 sq-stack-tight">
+                                    <p class="lead mb-1">Credits: Francesco Vigni</p>
+                                    <p class="mb-0">Built with: <a href="https://pypi.org/project/PyQRCode/" target="_blank">PyQRCode</a></p>
+                            </div>
+                    </div>
+            </div>
+    </footer>
 
 </div>
 
