@@ -13,3 +13,4 @@ zipp==3.17.0
 pyzbar==0.1.9
 gunicorn==20.1.0
 selenium==4.15.2
+Flask-Limiter==3.5.0
