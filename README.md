@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="main.png" alt="SmallQR Header" width="400">
-</p>
-
 # SmallQR Web App
 
 <p align="center">
@@ -17,9 +13,6 @@
   <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
   <img alt="Last Commit" src="https://img.shields.io/github/last-commit/vignif/smallQR.svg" />
 </p>
-
-<p align="center"><sub>If the dynamic Coveralls badge is unavailable, the fallback coverage badge above remains as a placeholder. Update it after the next successful CI coverage run.</sub></p>
-
 
 SmallQR is a web application that allows users to create the smallest QR code given their input data. The generated QR code is held in memory, not stored on the disk. Users can customize settings such as error correction level and QR code version.
 
