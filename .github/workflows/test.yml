@@ -49,4 +49,3 @@ jobs:
       - name: Run Selenium tests
         run: |
           python -m unittest discover -s webapp -p 'test_download.py'
-          python -m unittest discover -s webapp -p 'test_download.py'

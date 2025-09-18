@@ -36,25 +36,32 @@ class TestDownloadQR(unittest.TestCase):
         driver.get(self.base_url)
         wait = WebDriverWait(driver, 10)
 
-        # Fill the form
+        # Fill the form with dummy text
         link_input = wait.until(EC.presence_of_element_located((By.ID, "link")))
-        link_input.send_keys("https://example.com")
+        dummy_text = "dummy test text"
+        link_input.send_keys(dummy_text)
 
-        # Get captcha question and answer
+        # Solve the captcha
         captcha_input = driver.find_element(By.ID, "captcha")
         question = captcha_input.get_attribute("placeholder")
-        # Extract numbers and calculate answer
         import re
         nums = re.findall(r"(\d+)", question)
         answer = str(int(nums[0]) + int(nums[1]))
         captcha_input.send_keys(answer)
 
-        # Submit form
+        # Submit the form
         submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
         submit_btn.click()
 
-        # Wait for download button and click
+        # Wait for the download button to appear
         download_btn = wait.until(EC.element_to_be_clickable((By.ID, "downloadBtn")))
+        self.assertTrue(download_btn.is_displayed(), "Download button not displayed")
+
+        # Check that the QR code image is present
+        qr_img = wait.until(EC.presence_of_element_located((By.ID, "qrImage")))
+        self.assertTrue(qr_img.is_displayed(), "QR code image not displayed")
+
+        # Click the download button
         download_btn.click()
 
         # Wait for file to appear in download dir
