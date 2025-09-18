@@ -7,10 +7,6 @@
   <a href="https://coveralls.io/github/vignif/smallQR?branch=main">
     <img alt="Coverage Status" src="https://coveralls.io/repos/github/vignif/smallQR/badge.svg?branch=main" />
   </a>
-  <!-- Fallback static coverage badge (manually update if Coveralls down) -->
-  <img alt="Coverage Fallback" src="https://img.shields.io/badge/coverage-passing-success?label=coverage%20(fallback)" />
-  <img alt="Python Version" src="https://img.shields.io/badge/Python-3.9-blue.svg" />
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
   <img alt="Last Commit" src="https://img.shields.io/github/last-commit/vignif/smallQR.svg" />
 </p>
 
@@ -24,11 +20,9 @@ SmallQR is a web application that allows users to create the smallest QR code gi
 - In-memory storage (no disk storage)
 
 
-## Demo Available
-App currently hosted on pythonanywhere. Click the link below to try it out!
+## App Available on a VPS
 
-[![Demo](https://img.shields.io/badge/Demo-Click%20Here-blue.svg)](https://smallqr.pythonanywhere.com/)
-
+[![Live App](https://img.shields.io/badge/Demo-Click%20Here-blue.svg)](https://apps.francescovigni.com/smallqr/)
 
 ### Installation
 
@@ -36,3 +30,8 @@ App currently hosted on pythonanywhere. Click the link below to try it out!
 
    ```bash
    git clone https://github.com/vignif/SmallQR-Web-App.git
+
+<p align="center">
+  <img alt="Python Version" src="https://img.shields.io/badge/Python-3.9-blue.svg" />
+  <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
+</p>
