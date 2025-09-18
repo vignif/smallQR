@@ -32,8 +32,10 @@ class TestDownloadQR(unittest.TestCase):
         cls.driver.quit()
 
     def test_download_qr(self):
-        driver = self.driver
-        driver.get(self.base_url)
+        driver = self.__class__.driver
+        base_url = self.__class__.base_url
+        download_dir = self.__class__.download_dir
+        driver.get(base_url)
         wait = WebDriverWait(driver, 10)
 
         # Fill the form with dummy text
@@ -54,7 +56,10 @@ class TestDownloadQR(unittest.TestCase):
         driver.execute_script("arguments[0].scrollIntoView(true);", submit_btn)
         submit_btn.click()
 
-        # Wait for the download button to appear
+        # Wait for the QR code result card to appear (ensures page transition is done)
+        wait.until(EC.presence_of_element_located((By.CLASS_NAME, "card-body")))
+
+        # Wait for the download button to appear and be clickable
         download_btn = wait.until(EC.element_to_be_clickable((By.ID, "downloadBtn")))
         self.assertTrue(download_btn.is_displayed(), "Download button not displayed")
 
@@ -62,12 +67,13 @@ class TestDownloadQR(unittest.TestCase):
         qr_img = wait.until(EC.presence_of_element_located((By.ID, "qrImage")))
         self.assertTrue(qr_img.is_displayed(), "QR code image not displayed")
 
-        # Click the download button
+        # Scroll download button into view and click
+        driver.execute_script("arguments[0].scrollIntoView(true);", download_btn)
         download_btn.click()
 
         # Wait for file to appear in download dir
         time.sleep(2)  # Give time for download
-        files = os.listdir(self.download_dir)
+        files = os.listdir(download_dir)
         self.assertTrue(any(f.endswith('.png') for f in files), "QR code PNG not downloaded")
 
 if __name__ == "__main__":
