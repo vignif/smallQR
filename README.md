@@ -28,6 +28,8 @@ This application is designed with data minimization:
 - No analytics, tracking, or marketing cookies.
 - Aggregate counter tracks only total number of QR codes generated.
 - Security headers (CSP / Referrer-Policy / etc.) are applied.
+- Cloudflare reverse proxy adds DDoS protection; IP & UA appear in security logs (retained ≤ 30 days).
+- Basic rate limiting (Flask-Limiter) mitigates automated abuse.
 
 See the dedicated [Privacy page](/privacy) in the running app for full details (legal basis, retention, rights, third parties).
 

@@ -11,6 +11,8 @@ import base64
 from typing import Any, Dict
 from flask import Flask, request, render_template, session
 from werkzeug.middleware.proxy_fix import ProxyFix
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 from config import get_config
 from utils.captcha import generate_captcha, validate_captcha
@@ -36,6 +38,17 @@ app.config.update(
     SESSION_COOKIE_SAMESITE="Lax",
 )
 
+# Rate limiting (respect Cloudflare connecting IP if present)
+def _cf_remote_addr():  # pragma: no cover - simple accessor
+    return request.headers.get("CF-Connecting-IP") or get_remote_address()
+
+limiter = Limiter(
+    key_func=_cf_remote_addr,
+    storage_uri="memory://",
+    default_limits=["120 per minute"],  # global safety net
+)
+limiter.init_app(app)
+
 app_data = {
     "name": "Smallest QR Code Generator for links",
     "description": "Effortlessly create ultra-compact, high-quality QR codes for your links or text. Fast, private, and beautifully simple. Just paste, click, and share your scannable magic.",
@@ -53,10 +66,12 @@ MAX_INPUT_LENGTH = app.config["MAX_INPUT_LENGTH"]
 
 
 @app.route("/smallqr/", methods=["GET", "POST"])
+@limiter.limit("30 per minute")
 def smallqr_index():  # pragma: no cover - proxy convenience
     return index()
 
 @app.route("/", methods=["GET", "POST"])
+@limiter.limit("30 per minute")
 def index():
     """Handle QR generation UI."""
     state: Dict[str, Any] = {
@@ -159,6 +174,13 @@ def _security_headers(resp):  # pragma: no cover - header-level
     )
     resp.headers.setdefault("Content-Security-Policy", csp)
     return resp
+
+
+# Lightweight ping endpoint to facilitate rate-limit testing without captcha complexity
+@app.route("/ping")
+@limiter.limit("5 per minute")
+def ping():  # pragma: no cover - trivial
+    return {"status": "ok"}
 
 
 if __name__ == "__main__":  # pragma: no cover
