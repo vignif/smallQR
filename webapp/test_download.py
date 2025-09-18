@@ -51,6 +51,7 @@ class TestDownloadQR(unittest.TestCase):
 
         # Submit the form
         submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+        driver.execute_script("arguments[0].scrollIntoView(true);", submit_btn)
         submit_btn.click()
 
         # Wait for the download button to appear
