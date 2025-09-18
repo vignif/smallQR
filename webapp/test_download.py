@@ -54,7 +54,10 @@ class TestDownloadQR(unittest.TestCase):
         # Submit the form
         submit_btn = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
         driver.execute_script("arguments[0].scrollIntoView(true);", submit_btn)
-        submit_btn.click()
+        try:
+            submit_btn.click()
+        except Exception:
+            driver.execute_script("arguments[0].click();", submit_btn)
 
         # Wait for the QR code result card to appear (ensures page transition is done)
         wait.until(EC.presence_of_element_located((By.CLASS_NAME, "card-body")))
