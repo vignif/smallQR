@@ -144,12 +144,15 @@
         <div class="row">
             <div class="p-3">
             <div style="font-size: small;">
-                <p>Sanity Check - Decoding to string the encoded one provided above</p>
-                <ul>
-                    <li>Provided input: <b>{{ input_string }}</b></li>
-                    <li>Decoded data: <b>{{ decoded_string }}</b></li>
-                    <li>Decoded data is equal to the input data: <b>{{ decoded_string == input_string }}</b></li>
-                </ul>
+                <details>
+                    <summary>Sanity Check</summary>
+                    <p>Decoding to string the encoded one provided above</p>
+                    <ul>
+                        <li>Provided input: <b>{{ input_string }}</b></li>
+                        <li>Decoded data: <b>{{ decoded_string }}</b></li>
+                        <li>Decoded data is equal to the input data: <b>{{ decoded_string == input_string }}</b></li>
+                    </ul>
+                </details>
             </div>
         </div>
         </div>
