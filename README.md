@@ -1,14 +1,12 @@
 # SmallQR Web App
 
-<p align="center">
-  <a href="https://github.com/vignif/smallQR/actions/workflows/test.yml">
-    <img alt="CI Status" src="https://github.com/vignif/smallQR/actions/workflows/test.yml/badge.svg" />
-  </a>
-  <a href="https://coveralls.io/github/vignif/smallQR?branch=main">
-    <img alt="Coverage Status" src="https://coveralls.io/repos/github/vignif/smallQR/badge.svg?branch=main" />
-  </a>
-  <img alt="Last Commit" src="https://img.shields.io/github/last-commit/vignif/smallQR.svg" />
-</p>
+<a href="https://github.com/vignif/smallQR/actions/workflows/test.yml">
+  <img alt="CI Status" src="https://github.com/vignif/smallQR/actions/workflows/test.yml/badge.svg" />
+</a>
+<a href="https://coveralls.io/github/vignif/smallQR?branch=main">
+  <img alt="Coverage Status" src="https://coveralls.io/repos/github/vignif/smallQR/badge.svg?branch=main" />
+</a>
+<img alt="Last Commit" src="https://img.shields.io/github/last-commit/vignif/smallQR.svg" />
 
 SmallQR is a web application that allows users to create the smallest QR code given their input data. The generated QR code is held in memory, not stored on the disk. Users can customize settings such as error correction level and QR code version.
 
@@ -31,7 +29,6 @@ SmallQR is a web application that allows users to create the smallest QR code gi
    ```bash
    git clone https://github.com/vignif/SmallQR-Web-App.git
 
-<p align="center">
-  <img alt="Python Version" src="https://img.shields.io/badge/Python-3.9-blue.svg" />
-  <img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
-</p>
+
+<img alt="Python Version" src="https://img.shields.io/badge/Python-3.9-blue.svg" />
+<img alt="License" src="https://img.shields.io/badge/License-MIT-green.svg" />
