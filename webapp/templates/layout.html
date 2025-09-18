@@ -62,12 +62,51 @@
         });
       });
        // JavaScript to trigger the download
-    document.getElementById('downloadBtn').addEventListener('click', function() {
+  // Wrap dynamic behaviors so missing elements don't break other scripts
+  document.addEventListener('DOMContentLoaded', function () {
+    var dlBtn = document.getElementById('downloadBtn');
+    if (dlBtn) {
+      dlBtn.addEventListener('click', function() {
         var img = document.getElementById('qrImage');
+        if (!img) return;
         var link = document.createElement('a');
         link.href = img.src;
         link.download = 'qrcode.png';
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+                            const autoSwitch = document.getElementById('enableSliderSwitch');
+                            const range = document.getElementById('exampleRange');
+                            const lbl = document.getElementById('sliderValue');
+                            function sync() {
+                                if (autoSwitch.checked) {
+                                    range.disabled = true;
+                                    range.value = 0;
+                                    lbl.textContent = 'Current Value: Automatic';
+                                } else {
+                                    range.disabled = false;
+                                    lbl.textContent = 'Current Value: ' + range.value;
+                                }
+                            }
+                            autoSwitch.addEventListener('change', sync);
+                            range.addEventListener('input', () => {
+                                if (!autoSwitch.checked) lbl.textContent = 'Current Value: ' + range.value;
+                            });
+                            sync();
+    // Rotate chevron for <details> using attribute observer fallback (Safari <= 15 lacks ::marker control)
+    const adv = document.getElementById('advancedSettings');
+    if (adv) {
+      const chev = adv.querySelector('.chevron');
+      function syncChevron(){
+        if (!chev) return;
+        chev.style.transform = adv.hasAttribute('open') ? 'rotate(90deg)' : 'rotate(0deg)';
+      }
+      adv.addEventListener('toggle', syncChevron);
+      syncChevron();
+    }
     });
   </script>
   </body>
