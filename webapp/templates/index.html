@@ -7,6 +7,16 @@
             <div class="col-md sq-stack-tight">
                 <a href="/smallqr/" class="text-decoration-none"><h1 class="display-5 mb-0">{{ app_data['html_title'] }}</h1></a>
                 <p class="lead mb-1" style="text-align: justify;">{{ app_data['description'] }}</p>
+                <details class="mb-1">
+                    <summary><strong>Why this tool?</strong></summary>
+                    <ul class="mt-2 mb-1">
+                        <li><strong>Privacy-first</strong>: Your text is processed transiently and never stored; no tracking pixels, ads, or marketing analytics.</li>
+                        <li><strong>Smaller codes by design</strong>: Automatically picks the minimum QR version that fits your data, with manual version control if you need it.</li>
+                        <li><strong>Open and self-hostable</strong>: Fully open source, easy to run locally or in Docker, no vendor lock‑in or paywalls.</li>
+                        <li><strong>Using known libraries</strong>: Built on established, reliable <a href="https://pythonhosted.org/PyQRCode/index.html" target="_blank">library</a> for QR code generation.</li>
+                        <li><strong>No fluff</strong>: Focused on correctness and portability over logos, stickers, or heavy theming that can reduce scan rates.</li>
+                    </ul>
+                </details>
                 <p class="sq-muted mb-0">QR codes created since 09.2025: <b>{{ qr_count }}</b></p>
             </div>
         </div>
