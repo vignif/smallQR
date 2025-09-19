@@ -5,7 +5,6 @@ for easier testing and future extension.
 """
 from __future__ import annotations
 import logging
-import os
 import time
 import base64
 from typing import Any, Dict
@@ -168,7 +167,7 @@ def _security_headers(resp):  # pragma: no cover - header-level
         "default-src 'self'; "
         "img-src 'self' data:; "
         "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com; "
-        "script-src 'self' https://cdn.jsdelivr.net https://code.jquery.com; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://code.jquery.com; "
         "object-src 'none'; "
         "base-uri 'self'; form-action 'self'"
     )
