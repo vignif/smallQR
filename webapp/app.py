@@ -31,8 +31,9 @@ app.secret_key = app.config["SECRET_KEY"]
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_prefix=1)
 
 # Security & session hardening
+# Use Secure cookies based on config (production by default); allow turning off via env for local HTTP
 app.config.update(
-    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_SECURE=app.config.get("SECURE_COOKIES", True),
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
 )
@@ -127,7 +128,13 @@ def index():
 
     try:
         if version:
-            qr_bytes = generate_qr_manual(raw_input, version, error_level)
+            try:
+                qr_bytes = generate_qr_manual(raw_input, version, error_level)
+            except ValueError:
+                # If the chosen version is too small, gracefully bump to minimal fitting version
+                qr_bytes, minimal_version = generate_qr_min_version(raw_input, error_level)
+                state["minimal_version"] = minimal_version
+                state["version"] = minimal_version
         else:
             qr_bytes, minimal_version = generate_qr_min_version(raw_input, error_level)
             state["minimal_version"] = minimal_version
