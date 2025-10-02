@@ -9,6 +9,6 @@ services:
       - FLASK_ENV=production
       - PORT=8002
       - BASE_PATH=/smallqr
-      - SECURE_COOKIES=false
+      - SECURE_COOKIES=true
     restart: unless-stopped
     working_dir: /app
